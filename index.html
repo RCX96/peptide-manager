@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<title>Peptide Manager</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+[x-cloak]{display:none!important}
+.safe-bottom{padding-bottom:calc(6rem + env(safe-area-inset-bottom))}
+.safe-nav{padding-bottom:calc(.5rem + env(safe-area-inset-bottom))}
+.card{background:white;border:1px solid #eef2ff;border-radius:1.25rem;box-shadow:0 4px 18px rgba(15,23,42,.05)}
+</style>
+</head>
+<body x-data="app()" x-init="init()" x-cloak class="bg-slate-100 text-slate-800 safe-bottom">
+
+<header class="sticky top-0 z-30 bg-indigo-600 text-white shadow-lg">
+  <div class="max-w-md mx-auto p-4 flex items-center justify-between">
+    <div>
+      <div class="text-xs text-indigo-200">PAINEL</div>
+      <h1 class="text-xl font-extrabold"><i class="fa-solid fa-syringe mr-2"></i>Peptide Manager</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <button @click="tab='settings'" aria-label="Abrir configurações" title="Configurações" class="w-10 h-10 rounded-full bg-indigo-500/70 hover:bg-indigo-500">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-md mx-auto p-4">
+
+<!-- DASHBOARD -->
+
+<!-- HOME / DASHBOARD -->
+<section x-show="tab==='home'" x-cloak class="space-y-4 pb-24">
+  <header class="flex items-center justify-between">
+    <div>
+      <div class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Seu acompanhamento</div>
+      <h1 class="text-3xl font-black tracking-tight text-slate-900">Peptide Manager</h1>
+    </div>
+    <button @click="tab='settings'" class="w-11 h-11 rounded-full bg-white shadow-sm border flex items-center justify-center text-slate-700">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+  </header>
+
+  <div class="flex p-1 rounded-2xl bg-slate-100">
+    <button class="flex-1 py-3 rounded-xl text-sm font-bold text-slate-400">Agenda</button>
+    <button class="flex-1 py-3 rounded-xl bg-white shadow-sm text-sm font-bold text-slate-900">Jornada</button>
+  </div>
+
+  <div class="text-xs font-bold uppercase tracking-wide text-slate-400">
+    › PROTOCOLO · <span x-text="protocols.length ? (protocols[0].name || protocols[0].title || 'Meu protocolo') : 'Meu protocolo'"></span>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <button class="w-11 h-11 rounded-full bg-white border shadow-sm">‹</button>
+    <div class="text-center">
+      <div class="text-3xl font-black text-slate-900">Semana <span x-text="Math.max(1, Math.ceil((new Date().getDate())/7))"></span></div>
+      <div class="text-sm text-slate-400" x-text="new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})"></div>
+    </div>
+    <button class="w-11 h-11 rounded-full bg-white border shadow-sm">›</button>
+  </div>
+
+  <div class="grid grid-cols-2 bg-white rounded-3xl border shadow-sm overflow-hidden">
+    <div class="p-5">
+      <div class="text-sm text-slate-400">Peso</div>
+      <div class="mt-1 flex items-end gap-2">
+        <span class="text-4xl font-black text-slate-900" x-text="weight || '—'"></span>
+        <span class="text-slate-400 mb-1">kg</span>
+      </div>
+    </div>
+    <div class="p-5 border-l">
+      <div class="text-sm text-slate-400">Adesão</div>
+      <div class="mt-1 flex items-end gap-2">
+        <span class="text-4xl font-black text-slate-900" x-text="logs.length"></span>
+        <span class="text-slate-400 mb-1">aplicações</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl border shadow-sm p-4">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <div class="font-black text-xl">Jornada</div>
+        <div class="text-xs text-slate-400">Seu registro mais recente</div>
+      </div>
+    </div>
+
+    <template x-if="logs.length">
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <span class="font-bold" x-text="logs[logs.length-1].date || 'Hoje'"></span>
+          <span class="text-xs text-slate-400" x-text="logs[logs.length-1].compoundName || logs[logs.length-1].compound || ''"></span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <template x-for="tag in (logs[logs.length-1].compounds || [logs[logs.length-1].compoundName || logs[logs.length-1].compound || 'Aplicação'])" :key="tag">
+            <span class="px-3 py-2 rounded-full bg-slate-100 text-sm font-semibold text-slate-700" x-text="tag"></span>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <div x-show="!logs.length" class="text-sm text-slate-400 py-4">
+      Registre sua primeira aplicação para começar a acompanhar sua jornada.
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl border shadow-sm p-4">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+        <i class="fa-regular fa-calendar"></i>
+      </div>
+      <h2 class="font-black text-lg">Próxima aplicação</h2>
+    </div>
+    <div class="rounded-2xl bg-emerald-50/70 p-4 flex items-center justify-between">
+      <div>
+        <div class="font-black" x-text="nextProtocols.length ? (nextProtocols[0].name || 'Aplicação') : 'Nenhuma aplicação agendada'"></div>
+        <div class="text-sm text-slate-500" x-text="nextProtocols.length ? scheduleText(nextProtocols[0]) : 'Crie um protocolo para agendar'"></div>
+      </div>
+      <span class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-black">PRÓXIMA</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl border shadow-sm p-4">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">
+          <i class="fa-solid fa-box"></i>
+        </div>
+        <h2 class="font-black text-lg">Estoque de compostos</h2>
+      </div>
+      <button @click="tab='stock'" class="text-slate-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <div class="space-y-4">
+      <template x-for="c in compounds.slice(0,5)" :key="c.id">
+        <div>
+          <div class="flex items-center justify-between mb-1 text-sm">
+            <span class="font-bold text-slate-800" x-text="c.name"></span>
+            <span class="font-bold text-emerald-600"
+              x-text="Math.round(Math.min(100,Math.max(0,(Number(c.currentQty||0)/Math.max(1,Number(c.initialQty||0)))*100)))+'%'"></span>
+          </div>
+          <div class="h-2.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-emerald-500 transition-all"
+              :style="'width:'+Math.min(100,Math.max(0,(Number(c.currentQty||0)/Math.max(1,Number(c.initialQty||0)))*100))+'%'"></div>
+          </div>
+          <div class="text-xs text-slate-400 mt-1" x-text="formatQty(Math.max(0,c.currentQty))+' '+c.unit"></div>
+        </div>
+      </template>
+      <div x-show="!compounds.length" class="text-sm text-slate-400">Nenhum composto cadastrado.</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <button @click="tab='history'" class="bg-white rounded-2xl border p-4 text-left shadow-sm">
+      <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i>
+      <div class="font-black mt-2">Histórico</div>
+      <div class="text-xs text-slate-400 mt-1">Ver aplicações</div>
+    </button>
+    <button @click="tab='protocols'" class="bg-white rounded-2xl border p-4 text-left shadow-sm">
+      <i class="fa-solid fa-calendar-check text-emerald-600"></i>
+      <div class="font-black mt-2">Protocolos</div>
+      <div class="text-xs text-slate-400 mt-1">Organizar jornada</div>
+    </button>
+  </div>
+</section>
+
+
+<!-- APPLICATIONS -->
+<section x-show="tab==='applications'" x-cloak class="space-y-4 pb-24">
+  <div>
+    <div class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Registro</div>
+    <h2 class="text-3xl font-black text-slate-900">Aplicações</h2>
+    <p class="text-sm text-slate-400">Registre uma aplicação. O estoque é recalculado automaticamente pelo histórico.</p>
+  </div>
+
+  <button @click="openLog()" class="w-full py-4 rounded-2xl bg-emerald-600 text-white font-black shadow-sm">
+    <i class="fa-solid fa-syringe mr-2"></i> Registrar aplicação
+  </button>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-white rounded-2xl border p-4 shadow-sm">
+      <div class="text-xs text-slate-400">Total registradas</div>
+      <div class="text-3xl font-black mt-1" x-text="logs.length"></div>
+    </div>
+    <div class="bg-white rounded-2xl border p-4 shadow-sm">
+      <div class="text-xs text-slate-400">Protocolos ativos</div>
+      <div class="text-3xl font-black mt-1" x-text="protocols.length"></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl border shadow-sm p-5">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div>
+        <div class="font-black">Estoque automático</div>
+        <div class="text-sm text-slate-400">Cada registro de aplicação reduz o saldo do composto correspondente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOLS -->
+<section x-show="tab==='protocols'" class="space-y-4">
+  <div class="flex justify-between items-center"><h2 class="font-bold text-lg">Protocolos</h2><button @click="openProtocol()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold">+ Novo</button></div>
+  <template x-for="(p,i) in protocols" :key="p.id">
+    <div class="card p-4">
+      <div class="flex justify-between gap-3">
+        <div><h3 class="font-bold" x-text="p.name"></h3><p class="text-sm text-indigo-600" x-text="p.dose"></p><p class="text-xs text-slate-500 mt-1" x-text="scheduleText(p)"></p></div>
+        <div class="flex gap-1"><button @click="openProtocol(i)" class="w-9 h-9 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-pen"></i></button><button @click="removeProtocol(i)" class="w-9 h-9 bg-red-50 text-red-600 rounded-lg"><i class="fa-solid fa-trash"></i></button></div>
+      </div>
+      <div class="mt-3 p-2 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold" x-text="timeUntil(p)"></div>
+    </div>
+  </template>
+  <div x-show="protocols.length===0" class="text-center text-slate-400 py-10">Nenhum protocolo cadastrado.</div>
+</section>
+
+<!-- HISTORY -->
+<section x-show="tab==='history'" class="space-y-4">
+  <div class="flex justify-between items-center"><h2 class="font-bold text-lg">Histórico</h2><button @click="openLog()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold">+ Registrar</button></div>
+  <input x-model="search" placeholder="Buscar composto ou local..." class="w-full p-3 rounded-xl border bg-white">
+  <template x-for="l in filteredLogs" :key="l.id">
+    <div class="card p-4 flex justify-between gap-3">
+      <div><div class="font-bold" x-text="l.compound"></div><div class="text-sm text-indigo-600 mt-1"><i class="fa-solid fa-location-dot mr-1"></i><span x-text="l.siteFormatted"></span></div><div x-show="l.quantity!=null" class="text-xs text-slate-500 mt-1">Aplicado: <span x-text="formatQty(l.quantity)+' '+(l.unit||'')"></span></div><div class="text-xs text-slate-400 mt-2" x-text="formatDateBR(l.date)"></div></div>
+      <div class="flex gap-1"><button @click="openLog(logs.indexOf(l))" class="w-9 h-9 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-pen"></i></button><button @click="removeLog(logs.indexOf(l))" class="w-9 h-9 bg-red-50 text-red-600 rounded-lg"><i class="fa-solid fa-trash"></i></button></div>
+    </div>
+  </template>
+  <div x-show="filteredLogs.length===0" class="text-center text-slate-400 py-10">Nenhum registro encontrado.</div>
+</section>
+
+<!-- STOCK -->
+<section x-show="tab==='stock'" x-cloak class="space-y-4">
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="font-bold text-lg">Estoque de compostos</h2>
+      <p class="text-xs text-slate-400">Saldo restante de cada composto.</p>
+    </div>
+    <button @click="openCompoundModal()" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm font-bold">
+      + Composto
+    </button>
+  </div>
+
+  <div class="space-y-2">
+    <template x-for="c in compounds" :key="c.id">
+      <div class="p-4 rounded-xl border bg-white shadow-sm">
+        <div class="flex justify-between items-start gap-3">
+          <div>
+            <b class="text-base" x-text="c.name"></b>
+            <div class="text-xs text-slate-500 mt-1" x-text="c.category"></div>
+            <div class="mt-2 text-sm text-slate-600">
+              Saldo:
+              <b class="text-indigo-600" x-text="formatQty(stockRemaining(c))+' '+c.unit"></b>
+            </div>
+
+            <div class="mt-3">
+              <div class="flex justify-between items-center mb-1 text-xs">
+                <span class="text-slate-500">Estoque restante</span>
+                <b class="text-indigo-600"
+                   x-text="Math.round(Math.min(100, Math.max(0, (stockRemaining(c) / Math.max(1, Number(c.initialQty||0))) * 100)))+'%'"></b>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-full rounded-full bg-indigo-500 transition-all duration-300"
+                     :style="'width:'+Math.min(100, Math.max(0, (stockRemaining(c) / Math.max(1, Number(c.initialQty||0))) * 100))+'%'"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button @click="deleteCompound(c.id)" aria-label="Excluir composto" title="Excluir composto"
+                    class="w-10 h-10 rounded-xl bg-red-50 text-red-600">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div x-show="compounds.length===0" class="text-center text-slate-400 py-10">
+      Nenhum composto cadastrado.
+    </div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section x-show="tab==='settings'" class="space-y-4">
+  <h2 class="font-bold text-lg">Configurações</h2><p class="text-xs text-slate-400">Ferramentas de registro e acompanhamento. Não substitui orientação médica.</p>
+  <div class="card p-5 space-y-3">
+    <button @click="enableNotifications()" class="w-full p-3 rounded-xl bg-indigo-600 text-white font-bold"><i class="fa-solid fa-bell mr-2"></i><span x-text="notification==='granted'?'Notificações ativas':'Ativar notificações'"></span></button>
+    <button @click="exportData()" class="w-full p-3 rounded-xl bg-slate-100 font-bold"><i class="fa-solid fa-download mr-2"></i>Exportar backup</button>
+    <label class="block w-full p-3 rounded-xl bg-slate-100 text-center font-bold cursor-pointer"><i class="fa-solid fa-upload mr-2"></i>Importar backup<input type="file" accept=".json,application/json" @change="importData($event)" class="hidden"></label>
+    <button @click="clearData()" class="w-full p-3 rounded-xl bg-red-50 text-red-600 font-bold"><i class="fa-solid fa-trash mr-2"></i>Apagar dados locais</button>
+  </div>
+
+  <div class="rounded-2xl bg-white p-5 text-xs text-slate-500"><b>Privacidade:</b> os registros são armazenados localmente no navegador. O aplicativo não envia esses dados para um servidor próprio.</div>
+</section>
+
+</main>
+
+<!-- NAV -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-lg safe-nav">
+<div class="max-w-md mx-auto flex justify-around py-2">
+<template x-for="n in nav" :key="n.id"><button @click="tab=n.id" :class="tab===n.id?'text-indigo-600':'text-slate-400'" class="flex flex-col items-center min-w-[58px]"><i class="fa-solid text-lg" :class="n.icon"></i><span class="text-[10px] mt-1 font-bold" x-text="n.label"></span></button></template>
+</div>
+</nav>
+
+<!-- MODALS -->
+<div x-show="protocolModal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+<div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-4 max-h-[90vh] overflow-y-auto">
+<h3 class="font-bold text-lg" x-text="editProtocol===null?'Novo protocolo':'Editar protocolo'"></h3>
+<input x-model="formP.name" placeholder="Nome do composto" class="w-full p-3 border rounded-xl">
+<input x-model="formP.dose" placeholder="Dose/registro conforme prescrição" class="w-full p-3 border rounded-xl">
+<select x-model="formP.frequency" class="w-full p-3 border rounded-xl"><option>Semanal</option><option>Diário</option></select>
+<select x-show="formP.frequency==='Semanal'" x-model="formP.day" class="w-full p-3 border rounded-xl"><option>Domingo</option><option>Segunda-feira</option><option>Terça-feira</option><option>Quarta-feira</option><option>Quinta-feira</option><option>Sexta-feira</option><option>Sábado</option></select>
+<input type="time" x-model="formP.time" class="w-full p-3 border rounded-xl">
+<div class="flex gap-2"><button @click="protocolModal=false" class="flex-1 p-3 rounded-xl bg-slate-100">Cancelar</button><button @click="saveProtocol()" class="flex-1 p-3 rounded-xl bg-indigo-600 text-white font-bold">Salvar</button></div>
+</div></div>
+
+<div x-show="logModal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+<div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-4 max-h-[90vh] overflow-y-auto">
+<h3 class="font-bold text-lg" x-text="editLog===null?'Registrar aplicação':'Editar registro'"></h3>
+<select x-model="formL.compound" @change="if(formL.compound!=='Outro') formL.quantity=protocolDoseNumber(formL.compound)" class="w-full p-3 border rounded-xl"><option value="">Selecione o composto</option><template x-for="p in protocols" :key="p.id"><option :value="p.name" x-text="p.name"></option></template><option value="Outro">Outro</option></select>
+<input x-show="formL.compound==='Outro'" x-model="formL.custom" placeholder="Nome" class="w-full p-3 border rounded-xl">
+<input type="date" x-model="formL.date" class="w-full p-3 border rounded-xl">
+<div class="flex items-center gap-2">
+<input type="number" min="0" step="any" x-model.number="formL.quantity" placeholder="Quantidade aplicada" class="flex-1 p-3 border rounded-xl">
+<span class="text-sm font-semibold text-slate-500" x-text="selectedLogUnit()"></span>
+</div>
+<div class="flex gap-2"><template x-for="r in ['Abdômen','Braço','Perna']" :key="r"><button @click="formL.region=r;formL.side='';formL.quadrant=''" :class="formL.region===r?'bg-indigo-600 text-white':'bg-slate-100'" class="flex-1 p-2 rounded-lg text-sm" x-text="r"></button></template></div>
+<div x-show="formL.region" class="flex gap-2"><button @click="formL.side='Direito';formL.quadrant=''" :class="formL.side==='Direito'?'bg-indigo-600 text-white':'bg-slate-100'" class="flex-1 p-2 rounded-lg">Direito</button><button @click="formL.side='Esquerdo';formL.quadrant=''" :class="formL.side==='Esquerdo'?'bg-indigo-600 text-white':'bg-slate-100'" class="flex-1 p-2 rounded-lg">Esquerdo</button></div>
+<div x-show="formL.region==='Abdômen'&&formL.side" class="grid grid-cols-2 gap-2"><template x-for="q in ['Superior 1','Superior 2','Superior 3','Superior 4','Médio','Inferior']" :key="q"><button @click="formL.quadrant=q" :class="formL.quadrant===q?'bg-indigo-600 text-white':'bg-slate-100'" class="p-2 rounded-lg text-xs" x-text="q"></button></template></div>
+<div class="flex gap-2"><button @click="logModal=false" class="flex-1 p-3 rounded-xl bg-slate-100">Cancelar</button><button @click="saveLog()" class="flex-1 p-3 rounded-xl bg-indigo-600 text-white font-bold">Salvar</button></div>
+</div></div>
+
+<script>
+function app(){
+const KEY='peptide-manager-v4';
+return{
+compounds:[{id:'c1',name:'Tirzepatida',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c2',name:'Semaglutida',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c3',name:'Retatrutida',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c4',name:'BPC-157',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c5',name:'TB-500',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c6',name:'CJC-1295',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c7',name:'Ipamorelina',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c8',name:'GHRP-2',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c9',name:'GHRP-6',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c10',name:'Hexarelina',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c11',name:'Tesamorelina',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c12',name:'PT-141 (Bremelanotida)',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c13',name:'Selank',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c14',name:'Semax',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c15',name:'Epitalon',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c16',name:'MOTS-c',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c17',name:'AOD-9604',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c18',name:'DSIP',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c19',name:'Kisspeptina',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},{id:'c20',name:'LL-37',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'}],compoundModal:false,editingCompound:false,compoundForm:{id:null,name:'',category:'Peptídeo',initialQty:0,currentQty:0,unit:'mg'},
+tab:'home',search:'',notification:'default',protocolModal:false,logModal:false,editProtocol:null,editLog:null,
+month:new Date(new Date().getFullYear(),new Date().getMonth(),1),selectedDate:'',
+nav:[{id:'home',icon:'fa-house',label:'Início'},{id:'applications',icon:'fa-syringe',label:'Aplicações'},{id:'stock',icon:'fa-box-open',label:'Estoque'},{id:'protocols',icon:'fa-calendar-days',label:'Protocolos'},{id:'history',icon:'fa-clock-rotate-left',label:'Histórico'}],
+protocols:[],logs:[],weight:'',
+formP:{id:'',name:'',dose:'',frequency:'Semanal',day:'Segunda-feira',time:'08:00'},
+formL:{id:'',compound:'',custom:'',date:'',quantity:0,region:'',side:'',quadrant:''},
+
+init(){this.load();if('Notification'in window)this.notification=Notification.permission;setInterval(()=>this.checkReminders(),30000);if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});},
+uid(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)},
+today(){let d=new Date(),o=d.getTimezoneOffset()*60000;return new Date(d-o).toISOString().slice(0,10)},
+
+openCompoundModal(c=null){this.editingCompound=!!c;this.compoundForm=c?{...c}:{id:null,name:'',category:'Peptídeo',currentQty:0,unit:'mg'};this.compoundModal=true},
+formatQty(v){return Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:2})},
+saveCompound(){
+  const name=(this.compoundForm.name||'').trim();
+  if(!name){alert('Informe o nome do composto.');return}
+  const initial=Math.max(0,Number(this.compoundForm.initialQty)||0);
+  const unit=this.compoundForm.unit||'mg';
+  if(this.editingCompound){
+    const i=this.compounds.findIndex(x=>x.id===this.compoundForm.id);
+    if(i>=0){
+      this.compounds[i]={...this.compounds[i],...this.compoundForm,name,currentQty:current,unit};
+    }
+  }else{
+    this.compounds.push({
+      id:'c'+Date.now(),name,
+      category:(this.compoundForm.category||'Composto').trim(),
+      initialQty:initial,currentQty:initial,unit
+    });
+  }
+  this.save();
+  this.compoundModal=false;
+},
+deleteCompound(id){if(confirm('Excluir este composto da lista?')){this.compounds=this.compounds.filter(x=>x.id!==id);this.save()}},
+save(){localStorage.setItem(KEY,JSON.stringify({version:6,protocols:this.protocols,logs:this.logs,weight:this.weight,compounds:this.compounds}))},
+load(){try{let d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){this.protocols=d.protocols||[];this.logs=d.logs||[];this.weight=d.weight||'';this.compounds=(d.compounds||this.compounds).map(c=>({...c,initialQty:Number(c.initialQty||0),currentQty:Number(c.currentQty??c.initialQty??0),unit:c.unit||'mg'}))}}catch(e){}},
+formatDateBR(s){if(!s)return'';let[a,b,c]=s.split('-');return `${c}/${b}/${a}`},
+monthLabel(){return this.month.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})},
+changeMonth(n){this.month=new Date(this.month.getFullYear(),this.month.getMonth()+n,1);this.selectedDate=''},
+goToday(){this.month=new Date(new Date().getFullYear(),new Date().getMonth(),1);this.selectedDate=this.today()},
+calendarCells(){
+let y=this.month.getFullYear(),m=this.month.getMonth(),start=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),a=[];
+for(let i=0;i<start;i++)a.push({key:'x'+i,date:'',day:''});
+for(let d=1;d<=days;d++){let date=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;a.push({key:date,date,day:d,count:this.logsForDate(date).length})}
+return a;
+},
+logsForDate(d){return this.logs.filter(x=>x.date===d)},
+get filteredLogs(){let q=this.search.toLowerCase();return this.logs.filter(x=>`${x.compound} ${x.siteFormatted}`.toLowerCase().includes(q)).sort((a,b)=>new Date(b.date)-new Date(a.date))},
+get nextProtocols(){return [...this.protocols].sort((a,b)=>this.nextTimestamp(a)-this.nextTimestamp(b)).slice(0,3)},
+scheduleText(p){return p.frequency==='Semanal'?`${p.day} às ${p.time}`:`Diário às ${p.time}`},
+nextTimestamp(p){
+let now=new Date(),[h,m]=p.time.split(':').map(Number),t=new Date(now);t.setHours(h,m,0,0);
+if(p.frequency==='Diário'){if(t<=now)t.setDate(t.getDate()+1)}
+else{let map={'Domingo':0,'Segunda-feira':1,'Terça-feira':2,'Quarta-feira':3,'Quinta-feira':4,'Sexta-feira':5,'Sábado':6},w=map[p.day]-now.getDay();if(w<0)w+=7;if(w===0&&t<=now)w=7;t.setDate(t.getDate()+w)}
+return t.getTime();
+},
+timeUntil(p){let diff=this.nextTimestamp(p)-Date.now(),d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000);return d?`em ${d}d ${h}h`:h?`em ${h}h ${m}m`:m?`em ${m} min`:'agora'},
+compoundStats(){
+let map={};this.logs.forEach(l=>map[l.compound]=(map[l.compound]||0)+1);let vals=Object.entries(map).map(([name,count])=>({name,count})),max=Math.max(1,...vals.map(x=>x.count));return vals.sort((a,b)=>b.count-a.count).map(x=>({...x,percent:x.count/max*100}));
+},
+openProtocol(i=null){this.editProtocol=i;this.formP=i===null?{id:this.uid(),name:'',dose:'',frequency:'Semanal',day:'Segunda-feira',time:'08:00'}:JSON.parse(JSON.stringify(this.protocols[i]));this.protocolModal=true},
+saveProtocol(){if(!this.formP.name.trim()||!this.formP.dose.trim()||!this.formP.time){alert('Preencha os campos obrigatórios.');return}if(this.editProtocol===null)this.protocols.push({...this.formP});else this.protocols.splice(this.editProtocol,1,{...this.formP});this.save();this.protocolModal=false},
+removeProtocol(i){if(confirm('Excluir este protocolo?')){this.protocols.splice(i,1);this.save()}},
+selectedLogUnit(){
+let name=this.formL.compound==='Outro'?this.formL.custom:this.formL.compound;
+let c=this.compounds.find(x=>x.name===name);
+return c?.unit||'';
+},
+protocolDoseNumber(name){
+let p=this.protocols.find(x=>x.name===name);
+let m=String(p?.dose||'').replace(',','.').match(/\d+(?:\.\d+)?/);
+return m?Number(m[0]):0;
+},
+openLog(i=null){
+this.editLog=i;
+if(i===null){
+let compound=this.protocols[0]?.name||'';
+this.formL={id:this.uid(),compound,custom:'',date:this.today(),quantity:this.protocolDoseNumber(compound),region:'',side:'',quadrant:''};
+}else{
+this.formL=JSON.parse(JSON.stringify(this.logs[i]));
+this.formL.quantity=Number(this.formL.quantity||0);
+}
+this.logModal=true;
+},
+saveLog(){
+let c=this.formL.compound==='Outro'?this.formL.custom.trim():this.formL.compound;
+let qty=Number(this.formL.quantity||0);
+if(!c||!this.formL.date||!this.formL.region||!this.formL.side){alert('Preencha composto, data, região e lado.');return}
+if(!(qty>0)){alert('Informe a quantidade aplicada.');return}
+let compound=this.compounds.find(x=>x.name===c);
+let s=`${this.formL.region} ${this.formL.side}`+(this.formL.quadrant?` (${this.formL.quadrant})`:''),o={id:this.formL.id||this.uid(),compound:c,compoundId:compound?.id||'',quantity:qty,unit:compound?.unit||'',date:this.formL.date,siteFormatted:s};
+if(this.editLog===null)this.logs.unshift(o);else this.logs.splice(this.editLog,1,o);
+this.save();this.logModal=false;
+},
+stockUsed(c){
+let total=0;
+this.logs.forEach(l=>{
+if((l.compoundId&&l.compoundId===c.id)||(l.compound===c.name)){total+=Number(l.quantity||0)}
+});
+return Math.max(0,total);
+},
+stockRemaining(c){
+return Math.max(0,Number(c.initialQty||0)-this.stockUsed(c));
+},
+removeLog(i){if(confirm('Excluir este registro?')){this.logs.splice(i,1);this.save()}},
+async enableNotifications(){if(!('Notification'in window)){alert('Seu navegador não oferece notificações.');return}this.notification=await Notification.requestPermission()},
+checkReminders(){if(this.notification!=='granted')return;let now=new Date(),days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],tm=now.toTimeString().slice(0,5),key=`r-${now.toISOString().slice(0,10)}-${tm}`;if(sessionStorage.getItem(key))return;let hit=false;this.protocols.forEach(p=>{if(p.time===tm&&(p.frequency==='Diário'||p.day===days[now.getDay()])){hit=true;if(navigator.serviceWorker?.controller)navigator.serviceWorker.ready.then(r=>r.showNotification('⏰ Peptide Manager',{body:`Lembrete: ${p.name} • ${p.dose}`,tag:p.id}));else new Notification('⏰ Peptide Manager',{body:`Lembrete: ${p.name} • ${p.dose}`})}});if(hit)sessionStorage.setItem(key,'1')},
+exportData(){let b=new Blob([JSON.stringify({app:'Peptide Manager',version:6,exportedAt:new Date().toISOString(),protocols:this.protocols,logs:this.logs,weight:this.weight,compounds:this.compounds},null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`peptide-manager-${this.today()}.json`;a.click();URL.revokeObjectURL(u)},
+importData(e){let f=e.target.files?.[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.protocols)||!Array.isArray(d.logs))throw 0;if(confirm('Substituir os dados atuais pelo backup?')){this.protocols=d.protocols;this.logs=d.logs;this.weight=d.weight||'';this.compounds=(d.compounds||this.compounds).map(c=>({...c,initialQty:Number(c.initialQty||0),currentQty:Number(c.currentQty??c.initialQty??0),unit:c.unit||'mg'}));this.save();alert('Backup importado.')}}catch(_){alert('Backup inválido.')}};r.readAsText(f);e.target.value=''},
+clearData(){if(confirm('Apagar todos os dados deste navegador?')){localStorage.removeItem(KEY);this.protocols=[];this.logs=[];this.compounds=this.compounds.map(c=>({...c,initialQty:0,currentQty:0}));this.search='';this.tab='home';}}
+}}
+</script>
+
+  <div x-show="compoundModal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-4">
+      <h3 class="font-bold text-lg" x-text="editingCompound?'Editar composto':'Novo composto'"></h3>
+      <input x-model="compoundForm.name" placeholder="Nome do composto" class="w-full p-3 border rounded-xl">
+      <input x-model="compoundForm.category" placeholder="Categoria" class="w-full p-3 border rounded-xl">
+      <div class="grid grid-cols-2 gap-2"><input type="number" min="0" step="any" x-model.number="compoundForm.initialQty" placeholder="Quantidade inicial" class="w-full p-3 border rounded-xl"><select x-model="compoundForm.unit" class="w-full p-3 border rounded-xl"><option>mg</option><option>mcg</option><option>mL</option><option>UI</option><option>un</option></select></div>
+      <div class="flex gap-2"><button @click="compoundModal=false" class="flex-1 p-3 rounded-xl bg-slate-100">Cancelar</button><button @click="saveCompound()" class="flex-1 p-3 rounded-xl bg-indigo-600 text-white font-bold">Salvar</button></div>
+    </div>
+  </div>
+</body></html>

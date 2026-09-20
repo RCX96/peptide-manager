@@ -1,0 +1,213 @@
+{
+  "app": "Peptide Manager",
+  "version": 5,
+  "exportedAt": "2026-09-20T18:39:30.028Z",
+  "protocols": [
+    {
+      "id": "mua2hk3x-ai9sp8",
+      "name": "Tirzepatida",
+      "dose": "5.0 mg",
+      "frequency": "Semanal",
+      "day": "Quarta-feira",
+      "time": "08:00"
+    }
+  ],
+  "logs": [
+    {
+      "id": "mua5ok72-7wjwef",
+      "compound": "Tirzepatida",
+      "compoundId": "c1",
+      "quantity": 2.5,
+      "unit": "mg",
+      "date": "2026-08-19",
+      "siteFormatted": "Abdômen Direito"
+    },
+    {
+      "id": "mua5lsl7-zsa92y",
+      "compound": "Tirzepatida",
+      "compoundId": "c1",
+      "quantity": 2.5,
+      "unit": "mg",
+      "date": "2026-08-26",
+      "siteFormatted": "Abdômen Esquerdo"
+    },
+    {
+      "id": "mua5lauv-d98a8z",
+      "compound": "Tirzepatida",
+      "compoundId": "c1",
+      "quantity": 2.5,
+      "unit": "mg",
+      "date": "2026-09-02",
+      "siteFormatted": "Braço Esquerdo"
+    },
+    {
+      "id": "mua5jxez-29khkh",
+      "compound": "Tirzepatida",
+      "compoundId": "c1",
+      "quantity": 2.5,
+      "unit": "mg",
+      "date": "2026-09-09",
+      "siteFormatted": "Braço Direito"
+    },
+    {
+      "id": "mua2iuk1-k37eyf",
+      "compound": "Tirzepatida",
+      "compoundId": "c1",
+      "quantity": 5,
+      "unit": "mg",
+      "date": "2026-09-16",
+      "siteFormatted": "Abdômen Direito (Inferior)"
+    }
+  ],
+  "calc": {
+    "mg": 5,
+    "ml": 2,
+    "mcg": 250
+  },
+  "compounds": [
+    {
+      "id": "c1",
+      "name": "Tirzepatida",
+      "category": "Peptídeo",
+      "initialQty": 60,
+      "currentQty": 45,
+      "unit": "mg"
+    },
+    {
+      "id": "c2",
+      "name": "Semaglutida",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c3",
+      "name": "Retatrutida",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c4",
+      "name": "BPC-157",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c5",
+      "name": "TB-500",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c6",
+      "name": "CJC-1295",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c7",
+      "name": "Ipamorelina",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c8",
+      "name": "GHRP-2",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c9",
+      "name": "GHRP-6",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c10",
+      "name": "Hexarelina",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c11",
+      "name": "Tesamorelina",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c12",
+      "name": "PT-141 (Bremelanotida)",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c13",
+      "name": "Selank",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c14",
+      "name": "Semax",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c15",
+      "name": "Epitalon",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c16",
+      "name": "MOTS-c",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c17",
+      "name": "AOD-9604",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    },
+    {
+      "id": "c20",
+      "name": "LL-37",
+      "category": "Peptídeo",
+      "initialQty": 0,
+      "currentQty": 0,
+      "unit": "mg"
+    }
+  ]
+}
